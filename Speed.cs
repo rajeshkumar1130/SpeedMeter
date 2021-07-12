@@ -2,6 +2,7 @@
 using System.Drawing;
 using Echevil;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace speedMeter
 {
@@ -9,69 +10,85 @@ namespace speedMeter
     {
         static NetworkMonitor networkMonitor = new NetworkMonitor();
         static NetworkAdapter[] networkAdapters = networkMonitor.Adapters;
+
+
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = CharSet.Auto)]
+        extern static bool DestroyIcon(IntPtr handle);
         public Speed()
         {
             InitializeComponent();
             TrayMenuContext();
         }
 
-        private string getDownloadSpeed()
+        private string GetDownloadSpeed()
         {
             string text = "-1";
+            long dlSpeed = 0;
             foreach (var adapter in networkAdapters)
             {
-                text = $"{adapter.DownloadSpeed / Math.Pow(1024, 2):N1}";
-                UploadText.Text = $"DL: {text}";
+                dlSpeed += adapter.DownloadSpeed;
             }
+
+            //text = $"{adapter.DownloadSpeed / Math.Pow(1024, 2):N1}";
+            text = $"{dlSpeed / Math.Pow(1024, 1):N1}";
+            DownloadText.Text = $"DL: {text}";
             return text;
         }
-        private string getUploadSpeed()
+        private string GetUploadSpeed()
         {
             string text = "-1";
+            long ulSpeed = 0;
             foreach (var adapter in networkAdapters)
             {
-                text = $"{adapter.UploadSpeed / Math.Pow(1024, 2):N1}";
-                DownloadText.Text = $"UL: {text}";
+                ulSpeed += adapter.UploadSpeed;
             }
+
+            text = $"{ulSpeed / Math.Pow(1024, 1):N1}";
+            UploadText.Text = $"UL: {text}";
             return text;
         }
-        private Icon getUploadIcon()
+        private Icon GetUploadIcon()
         {
+            //release previous handle
+            if (Upload.Icon != null)
+            {
+                DestroyIcon(Upload.Icon.Handle);
+            }
+
             using (Bitmap bitmap = new Bitmap(32, 32))
             {
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    Font font = new Font("Microsoft Sans Serif", 20, FontStyle.Regular, GraphicsUnit.Pixel);
-                    string iconText = getUploadSpeed();
-                    g.DrawString(iconText, font, new SolidBrush(Color.Red), new PointF(-2, -2));
+                    Font font = new Font("Microsoft Sans Serif", 16, FontStyle.Regular, GraphicsUnit.Pixel);
+                    string iconText = GetUploadSpeed();
+                    g.DrawString(iconText, font, new SolidBrush(Color.Red), new PointF(-2, 4));
                 }
                 return Icon.FromHandle(bitmap.GetHicon());
             }
         }
-        private Icon getDownloadIcon()
+        private Icon GetDownloadIcon()
         {
+            //release previous handle
+            if (Upload.Icon != null)
+            {
+                DestroyIcon(Download.Icon.Handle);
+            }
+
             using (Bitmap bitmap = new Bitmap(32, 32))
             {
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
-                    Font font = new Font("Microsoft Sans Serif", 20, FontStyle.Regular, GraphicsUnit.Pixel);
-                    string iconText = getDownloadSpeed();
-                    g.DrawString(iconText, font, new SolidBrush(Color.Green), new PointF(-2, -2));
+                    Font font = new Font("Microsoft Sans Serif", 16, FontStyle.Regular, GraphicsUnit.Pixel);
+                    string iconText = GetDownloadSpeed();
+                    g.DrawString(iconText, font, new SolidBrush(Color.Green), new PointF(-2, 4));
                 }
                 return Icon.FromHandle(bitmap.GetHicon());
             }
         }
         private void Task()
         {
-            try
-            {
-                Download.Icon = getDownloadIcon();
-                Upload.Icon = getUploadIcon();
-            }
-            catch (Exception ex)
-            {
-                //continue;
-            }
+            Download.Icon = GetDownloadIcon();
+            Upload.Icon = GetUploadIcon();
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -79,10 +96,11 @@ namespace speedMeter
             this.ShowInTaskbar = false;
             Timer timer = new Timer();
             timer.Enabled = true;
-            timer.Interval = 500;
+            timer.Interval = 1000;
             timer.Tick += (s, ex) => Task();
             networkMonitor.StartMonitoring();
             Download.Visible = true;
+            System.Threading.Thread.Sleep(100);
             Upload.Visible = true;
         }
 
