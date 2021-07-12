@@ -16,7 +16,7 @@ namespace speedMeter
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Speed());
+            Application.Run(new Form1());
         }
     }
 }
