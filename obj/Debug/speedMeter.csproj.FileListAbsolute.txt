@@ -1,0 +1,10 @@
+D:\Code\Git\SpeedMeter\bin\Debug\speedMeter.exe.config
+D:\Code\Git\SpeedMeter\bin\Debug\speedMeter.exe
+D:\Code\Git\SpeedMeter\bin\Debug\speedMeter.pdb
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.csprojAssemblyReference.cache
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.Properties.Resources.resources
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.csproj.GenerateResource.cache
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.csproj.CoreCompileInputs.cache
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.exe
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.pdb
+D:\Code\Git\SpeedMeter\obj\Debug\speedMeter.Speed.resources
